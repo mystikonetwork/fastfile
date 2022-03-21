@@ -830,7 +830,12 @@ async function readExisting$2(o, b, c) {
     if (process.browser) {
         if (typeof o === "string") {
             const buff = await fetch(o).then( function(res) {
-                return res.arrayBuffer();
+                if (res.ok) {
+                    return res.arrayBuffer();
+                }
+                return Promise.reject(
+                    new Error(`failed to fetch ${o}, status="${res.status}" statusText="${res.statusText}"`)
+                );
             }).then(function (ab) {
                 return new Uint8Array(ab);
             });
